@@ -13,13 +13,15 @@ $(function(){
         win = $(window),
         canvas = $('#paper'),
         ctx = canvas[0].getContext('2d'),
-        instructions = $('#instructions');
+        canvasOffset=canvas.offset(),
+        offsetX=canvasOffset.left,
+        offsetY=canvasOffset.top;
 
     // Generate an unique ID
     var id = Math.round($.now()*Math.random());
 
     // A flag for drawing activity
-    var drawing = false;
+    var drawing = true;
 
     var clients = {};
     var cursors = {};
@@ -60,9 +62,6 @@ $(function(){
         drawing = true;
         prev.x = e.pageX;
         prev.y = e.pageY;
-
-        // Hide the instructions
-        instructions.fadeOut();
     });
 
     doc.bind('mouseup mouseleave',function(){
@@ -74,8 +73,8 @@ $(function(){
     doc.on('mousemove',function(e){
         if($.now() - lastEmit > 30){
             socket.emit('mousemove',{
-                'x': e.pageX,
-                'y': e.pageY,
+                'x': e.pageX - offsetX,
+                'y': e.pageY - offsetY,
                 'drawing': drawing,
                 'id': id
             });
