@@ -1,0 +1,70 @@
+
+body {
+     font: 13px Helvetica, Arial;
+     height:90vh;
+}
+
+/*-------------------------
+	Main Area
+--------------------------*/
+
+#cursors{
+	position:relative;
+}
+
+#cursors .cursor{
+	position:absolute;
+	width:15px;
+	height:22px;
+}
+
+.message {
+    background-color: #ffffff;
+    float: left;
+    width: 20%;
+    height: 100%;
+    border-style: solid;
+    position:relative
+}
+
+form { 
+    background: #000;
+    position: absolute;
+    bottom: 0; 
+    width: 95%;
+    height: 5%;
+    border-style: solid;
+}
+
+form input { 
+    width: 80%; 
+    height: 95%;
+}
+
+form button { 
+    width: 18%; 
+    height: 95%;
+    background: rgb(130, 224, 255); 
+    border: none; 
+}
+
+#messages { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0;
+}
+
+#messages li {
+    padding: 5px 10px;
+}
+#messages li:nth-child(odd) {
+    background: #eee; 
+}
+
+.drawing {
+    background-color: #b6701e;
+    float: right;
+    width: 75%;
+    height: 100%;
+    border-style: solid;
+  }
