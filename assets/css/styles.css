@@ -8,17 +8,6 @@ body {
 	Main Area
 --------------------------*/
 
-#cursors{
-	position:relative;
-}
-
-#cursors .cursor{
-	position:absolute;
-	width:15px;
-	height:22px;
-	background:url('/img/pointer.png') no-repeat -4px 0;
-}
-
 .message {
     background-color: #ffffff;
     float: left;
@@ -73,6 +62,4 @@ form button {
 #paper
 {
     background-color: #eee;
-    width: 100%;
-    height: 100%;
 }

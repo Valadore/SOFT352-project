@@ -17,30 +17,21 @@ $(function(){
         offsetX=canvasOffset.left,
         offsetY=canvasOffset.top;
 
+    //set canvas size
+    document.getElementById('paper').width = document.getElementsByClassName("drawing")[0].clientWidth;
+    document.getElementById('paper').height = document.getElementsByClassName("drawing")[0].clientHeight;
+
     // Generate an unique ID
     var id = Math.round($.now()*Math.random());
 
     // A flag for drawing activity
-    var drawing = true;
+    var drawing = false;
 
     var clients = {};
-    var cursors = {};
 
     var socket = io.connect(url);
 
     socket.on('moving', function (data) {
-
-        if(! (data.id in clients)){
-            // a new user has come online. create a cursor for them
-            cursors[data.id] = $('<div class="cursor">').appendTo('#cursors');
-        }
-
-        // Move the mouse pointer
-        cursors[data.id].css({
-            'left' : data.x,
-            'top' : data.y
-        });
-
         // Is the user drawing?
         if(data.drawing && clients[data.id]){
 
@@ -80,35 +71,7 @@ $(function(){
             });
             lastEmit = $.now();
         }
-
-        // Draw a line for the current user's movement, as it is
-        // not received in the socket.on('moving') event above
-
-        if(drawing){
-
-            drawLine(prev.x, prev.y, e.pageX, e.pageY);
-
-            prev.x = e.pageX;
-            prev.y = e.pageY;
-        }
     });
-
-    // Remove inactive clients after 10 seconds of inactivity
-    setInterval(function(){
-
-        for(ident in clients){
-            if($.now() - clients[ident].updated > 10000){
-
-                // Last update was more than 10 seconds ago.
-                // This user has probably closed the page
-
-                cursors[ident].remove();
-                delete clients[ident];
-                delete cursors[ident];
-            }
-        }
-
-    },10000);
 
     function drawLine(fromx, fromy, tox, toy){
         ctx.moveTo(fromx, fromy);
