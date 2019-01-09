@@ -7,7 +7,10 @@ body {
 /*-------------------------
 	Main Area
 --------------------------*/
-
+#index {
+    width: 100%;
+    height: 100%;
+}
 .message {
     background-color: #ffffff;
     float: left;
@@ -17,7 +20,7 @@ body {
     position:relative;
 }
 
-form { 
+#send { 
     background: #000;
     position: absolute;
     bottom: 0; 
@@ -26,12 +29,12 @@ form {
     border-style: solid;
 }
 
-form input { 
+#send input { 
     width: 80%; 
     height: 95%;
 }
 
-form button { 
+#send button { 
     width: 18%; 
     height: 95%;
     background: rgb(130, 224, 255); 
@@ -62,4 +65,13 @@ form button {
 #paper
 {
     background-color: #eee;
+}
+
+#gameList {
+    background-color: #ffffff;
+    float: left;
+    width: 100%;
+    height: 100%;
+    border-style: solid;
+    position:absolute;
 }
