@@ -19,10 +19,71 @@
 }
 
 #index {
-    width: 100%;
-    height: 100%;
+    width: 95%;
+    height: 95%;
 }
 
+#game {
+    width: 95%;
+    height: 95%;
+}
+
+.message {
+    background-color: #ffffff;
+    float: left;
+    width: 20%;
+    height: 100%;
+    border-style: solid;
+    position:relative;
+}
+#send { 
+    background: #000;
+    position: absolute;
+    bottom: 0; 
+    width: 100%;
+    height: 5%;
+    border-style: solid;
+}
+
+#send input { 
+    position: relative;
+    float: left;
+    width: 70%; 
+    height: 95%;
+}
+
+#send button { 
+    position: relative;
+    float: right;
+    width: 25%; 
+    height: 95%;
+    background: rgb(130, 224, 255); 
+    border: none; 
+}
+
+#messages { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0;
+}
+
+#messages li {
+    padding: 5px 10px;
+}
+#messages li:nth-child(odd) {
+    background: #eee; 
+}
+.drawing {
+    float: right;
+    width: 75%;
+    height: 100%;
+    border-style: solid;
+    position:relative;
+  }
+  #paper
+  {
+      background-color: #eee;
+  }
 #gameList {
     background-color: #ffffff;
     float: left;

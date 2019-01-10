@@ -17,7 +17,7 @@ var clients = [];
 
 io.sockets.on('connect', function (client) {
     clients.push(client);
-
+    console.log(clients);
     client.on('disconnect', function () {
         clients.splice(clients.indexOf(client), 1);
     });
@@ -39,7 +39,7 @@ index.on('connection', function (socket) {
     });
 });
 
-var game = io.of('/game')
+var game = io.of('/')
 
 game.on('connection', function (socket) {
     socket.on('chat message', function (msg) {

@@ -65,6 +65,7 @@ body {
 #paper
 {
     background-color: #eee;
+    position:relative;
 }
 
 #gameList {

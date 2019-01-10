@@ -6,17 +6,17 @@ $(function () {
         return false;
     }
 
+    //set canvas size
+    document.getElementById('paper').width = document.getElementsByClassName("drawing")[0].clientWidth;
+    document.getElementById('paper').height = document.getElementsByClassName("drawing")[0].clientHeight;
+
     var doc = $(document),
         win = $(window),
         canvas = $('#paper'),
         ctx = canvas[0].getContext('2d'),
         canvasOffset = canvas.offset(),
-        offsetX = canvasOffset.left,
+        offsetX =  -canvasOffset.left - document.getElementById('paper').width + document.getElementsByClassName("message")[0].clientWidth - 10,
         offsetY = canvasOffset.top;
-
-    //set canvas size
-    document.getElementById('paper').width = document.getElementsByClassName("drawing")[0].clientWidth;
-    document.getElementById('paper').height = document.getElementsByClassName("drawing")[0].clientHeight;
 
     // Generate an unique ID
     var id = Math.round($.now() * Math.random());
@@ -26,7 +26,7 @@ $(function () {
 
     var clients = {};
 
-    var socket = io('/game');
+    var socket = io('/');
 
     socket.on('moving', function (data) {
         // Is the user drawing?
