@@ -11,10 +11,10 @@ $(function () {
     });
 
     //on submiting we create a new game room
-    $('#game').submit(function () {
-        if ($('#m').val() != '') {
-            socket.emit('NewGame', $('#m').val());
-            $('#m').val('');
+    $('#gameName').submit(function () {
+        if ($('#gameText').val() != '') {
+            socket.emit('NewGame', $('#gameText').val());
+            $('#gameText').val('');
             return false;
         }
     });
@@ -28,7 +28,7 @@ $(function () {
     function buildList(gameRooms) {
         var str = '';
         gameRooms.forEach(function (gameRoom) {
-            str += '<li>' + gameRoom + '<button id=' + gameRoom + '>Join Game</button>' + '</li>';
+            str += '<li>  ' + gameRoom + '  <button id=' + gameRoom + '>Join Game</button>' + '  </li>';
         });
         document.getElementById("gameList").innerHTML = str;
 
@@ -36,11 +36,17 @@ $(function () {
             document.getElementById(gameRoom).addEventListener("click", function () { reply_click(gameRoom) });
         });
     }
-    //this is where we need to redirect
+    //when a client clicks on a game room
     function reply_click(room) {
         socket.emit('joinGame', room)
     }
 
+    //if the game room is full
+    socket.on('full', function () {
+        alert('Game is full');
+    });
+
+    //on joining a game the html page is updated and the game checks that canvas is supported
     socket.on('joinGame', function () {
         window.location.href = "#two";
         // This demo depends on the canvas element
@@ -53,45 +59,79 @@ $(function () {
         document.getElementById('paper').height = document.getElementsByClassName("drawing")[0].clientHeight;
     });
 
-    socket.on('startRound', function (playerid, word) {
-        console.log('Round started');
+    var word;
+    var turn;
+    myTurn = false;
 
-        var socketid = socket.io.engine.id
-        var doc = $(document),
-            win = $(window),
-            canvas = $('#paper'),
-            ctx = canvas[0].getContext('2d'),
-            canvasOffset = canvas.offset(),
-            offsetX = canvasOffset.left,
-            offsetY = canvasOffset.top;
+    //when a round is started
+    socket.on('startRound', function (playerids, guessword, turntemp) {
+        //clear the previus guesses
+        $('#messages').html("");
+        var id = socket.io.engine.id
+        word = guessword;
+        turn = turntemp;
 
-        // Generate an unique ID
-        var id = Math.round($.now() * Math.random());
+        //if it is this clients turn to draw
+        if (id == playerids[turn]) {
+            //we change the text at the top of the screen
+            $('#header').html("");
+            $('#header').append('<p style="font-size:200%; text-align:center"> You are drawing: ' + word + '</p>');
+            //alert the player to the word
+            alert('Your word is: ' + word);
+            //set myTurn to true
+            myTurn = true;
+            //and call the draw function
+            draw(id);
+        }
+        //else if it is the turn to guess
+        else {
+            //set the text at the top of the screen
+            $('#header').html("");
+            $('#header').append('<p style="font-size:200%; text-align:center">You are guessing</p>');
+            //and set myturn to false
+            myTurn = false;
+        }
+        //set canvas size(also clears the canvas)
+        document.getElementById('paper').width = document.getElementsByClassName("drawing")[0].clientWidth;
+        document.getElementById('paper').height = document.getElementsByClassName("drawing")[0].clientHeight;
+    });
 
-        // A flag for drawing activity
-        var drawing = false;
+    var doc = $(document),
+        win = $(window),
+        canvas = $('#paper'),
+        ctx = canvas[0].getContext('2d');
 
-        var clients = {};
+    var clients = {};
 
-        socket.on('moving', function (data) {
-            // Is the user drawing?
-            if (data.drawing && clients[data.id]) {
+    //if a player is currently drawing
+    socket.on('moving', function (data) {
+        // Is the user drawing?
+        if (data.drawing && clients[data.id]) {
 
-                // Draw a line on the canvas. clients[data.id] holds
-                // the previous position of this user's mouse pointer
-                drawLine(clients[data.id].x, clients[data.id].y, data.x, data.y);
-            }
-
-            // Saving the current client state
-            clients[data.id] = data;
-            clients[data.id].updated = $.now();
-        });
-        function drawLine(fromx, fromy, tox, toy) {
-            ctx.moveTo(fromx, fromy);
-            ctx.lineTo(tox, toy);
-            ctx.stroke();
+            // Draw a line on the canvas. clients[data.id] holds
+            // the previous position of this user's mouse pointer
+            drawLine(clients[data.id].x, clients[data.id].y, data.x, data.y);
         }
 
+        // Saving the current client state
+        clients[data.id] = data;
+        clients[data.id].updated = $.now();
+    });
+    //fucntion to draw the lines
+    function drawLine(fromx, fromy, tox, toy) {
+        ctx.moveTo(fromx, fromy);
+        ctx.lineTo(tox, toy);
+        ctx.stroke();
+    }
+
+    //this function captures the players drawing and sends it back to the server
+    function draw(id) {
+
+        canvasOffset = canvas.offset(),
+            offsetX = canvasOffset.left,
+            offsetY = canvasOffset.top;
+        // A flag for drawing activity
+        var drawing = false;
         var prev = {};
 
         canvas.on('mousedown', function (e) {
@@ -105,10 +145,10 @@ $(function () {
             drawing = false;
         });
 
+        //using lastEmit to limmit the data rate
         var lastEmit = $.now();
-        if (playerid == socketid) {
-            alert('Your word is: ' + word);
-            doc.on('mousemove', function (e) {
+        doc.on('mousemove', function (e) {
+            if (myTurn) {
                 if ($.now() - lastEmit > 30) {
                     socket.emit('mousemove', {
                         'x': e.pageX - offsetX,
@@ -118,19 +158,26 @@ $(function () {
                     });
                     lastEmit = $.now();
                 }
-            });
-        } else {
-            $('#send').submit(function () {
-                var mesage = document.getElementById("text")
-                socket.emit('send guess', mesage.value, socketid, word);
-                $('#text').val('');
-                return false;
-            });
-        }
-        socket.on('chat message', function (msg) {
-            $('#messages').append($('<li>').text(msg));
+            }
         });
+    }
+    //if it is the players guessing turn they can submit guesses
+    $('#send').submit(function () {
+        if (!myTurn) {
+            var mesage = document.getElementById("text")
+            socket.emit('send guess', mesage.value, word, turn);
+            $('#text').val('');
+            return false;
+        }
+    });
 
+    //recives messages from the server
+    socket.on('chat message', function (msg) {
+        $('#messages').append($('<li>').text(msg));
+    });
+    //if the player wins they are notified
+    socket.on('win', function () {
+        alert('Congradulations, you guessed correctly!');
     });
 });
 
